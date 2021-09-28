@@ -13,7 +13,7 @@ cd acs-dashboard
 
 **TODO: Python VirtualEnv setup**
 
-Use the provided scripts to automatically download and modify the ACS PUMS and PUMAs data. These may take a while to run, depending on your internet speed. For a verbose explaination, see the [Downloading & Setting up Data Files](#downloading-&-setting-up-data-files) section.
+Use the provided scripts to automatically download and modify the ACS PUMS and PUMAs data. These may take a while to run, depending on your internet speed. For a verbose explaination, see the [Downloading and Setting up Data Files](#downloading-and-setting-up-data-files) section.
 
 **NOTE: These scripts don't exist yet**
 
@@ -42,7 +42,7 @@ This dashboard uses the [ACS 5-year estimate](https://www.census.gov/data/develo
 
 PUMS data is organized geographically into [Public Use Microdata Areas (PUMAs)](https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html), non-overlapping, statistical geographic areas that partition each state or equivalent entity into geographic areas containing no fewer than 100,000 people each.
 
-## Downloading & Setting up Data Files
+## Downloading and Setting up Data Files
 
 2019 5-year Summary ACS PUMS Data can be found at the [Census FTP site](https://www2.census.gov/programs-surveys/acs/data/pums/2019/5-Year/). The latest data is available on the Census ['Accessing PUMS Data'](https://www.census.gov/programs-surveys/acs/microdata/access.html) page. Person files are prefaced with 'p', and household files with 'h', followed by a two-letter state abbreviation (for example, person and household files for Vermont would be `csv_pvt.zip` and `csv_hvt.zip` respectively).
 
