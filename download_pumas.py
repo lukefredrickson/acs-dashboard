@@ -1,7 +1,5 @@
 import urllib.request
-import zipfile
 import os
-from os.path import exists
 import sys
 import time
 
@@ -57,10 +55,10 @@ def main():
         file_path = ""
         
         # download file if it doesn't already exist
-        if exists(os.path.join(data_path, file_name)):
+        if os.path.exists(os.path.join(data_path, file_name)):
             file_path = os.path.join(data_path, file_name)
             print("Downloading file '%s' ... done!" % file_name)
-        elif exists(os.path.join(zip_path, file_name)):
+        elif os.path.exists(os.path.join(zip_path, file_name)):
             file_path = os.path.join(zip_path, file_name)
             print("Downloading file '%s' ... done!" % file_name)
         else:
