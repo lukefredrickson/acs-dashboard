@@ -11,7 +11,11 @@ git clone https://github.com/lukefredrickson/acs-dashboard.git
 cd acs-dashboard
 ```
 
-**TODO: Python VirtualEnv setup**
+Install the required packages by running the following command. Creating a new Python virtual environment first is recommended (for further instructions see the [official Python documentation](https://docs.python.org/3/tutorial/venv.html)).
+
+```shell
+python -m pip install -r requirements.txt
+```
 
 Use the provided scripts to automatically download and modify the ACS PUMS and PUMAs data. These may take a while to run, depending on your internet speed. For a verbose explaination, see the [Downloading and Setting up Data Files](#downloading-and-setting-up-data-files) section.
 

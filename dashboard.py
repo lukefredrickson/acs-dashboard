@@ -7,7 +7,6 @@ from dash.dependencies import Input, Output, State
 
 import pandas as pd
 import json
-from urllib.request import urlopen
 
 
 # Initialize app
