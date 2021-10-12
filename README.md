@@ -1,6 +1,6 @@
 # American Community Survey Dashboard
 ### Author: Luke Fredrickson
-### Last Updated: 9/27/2021
+### Last Updated: 10/11/2021
 
 ## Quick Start Guide
 
