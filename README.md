@@ -20,15 +20,15 @@ python -m pip install -r requirements.txt
 Use the provided scripts to automatically download and modify the ACS PUMS and PUMAs data. These may take a while to run, depending on your internet speed. For a verbose explaination, see the [Downloading and Setting up Data Files](#downloading-and-setting-up-data-files) section.
 
 ```shell
+python download_pumas.py
+python convert_pumas.py
+```
+```shell
 python download_pums.py
 ```
 **NOTE: The following scripts don't exist yet**
 ```shell
 python analyze_pums.py
-```
-```shell
-python download_pumas.py
-python convert_pumas.py
 ```
 
 Once the data is downloaded and modified, you will be able to run the dashboard locally. Simply run:
