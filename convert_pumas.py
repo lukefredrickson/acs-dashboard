@@ -11,6 +11,7 @@ zip_path = "./data/pumas/zip/"
 current_file = ""
 json_file_path = ""
 
+
 def main():
     for file_name in files:
         global current_file
@@ -20,7 +21,7 @@ def main():
         json_file_name = (os.path.splitext(file_name)[0] + '.json')
         json_file_path = os.path.join(data_path, json_file_name)
 
-        print("Converting '%s' to geojson" % (file_name), end="")
+        print("Converting '%s' to geojson" % file_name, end="")
 
         if os.path.exists(json_file_path):
             print(" ... geojson already exists")
@@ -43,6 +44,7 @@ def main():
                 print(" ... conversion failed, invalid request to ogre conversion tool")
         else:
             print(" ... conversion failed, shapefile not found")
+
 
 if __name__ == '__main__':
     try:

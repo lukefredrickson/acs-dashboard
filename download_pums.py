@@ -11,8 +11,9 @@ base_url = "https://www2.census.gov/programs-surveys/acs/data/pums/2019/5-Year/"
 data_path = "./data/pums/"
 zip_path = "./data/pums/zip/"
 current_file = ""
-
 start_time = None
+
+
 def reporthook(count, block_size, total_size):
     global start_time
     global current_file
@@ -26,6 +27,7 @@ def reporthook(count, block_size, total_size):
                     (current_file, progress_size / (1024 * 1024), speed, duration))
     sys.stdout.flush()
 
+
 def fix_bad_zip_file(zip_file):  
     f = open(zip_file, 'r+b')  
     data = f.read()  
@@ -38,6 +40,7 @@ def fix_bad_zip_file(zip_file):
     else:  
         # raise error, file is truncated  
         print(" ... Error: File is truncated")
+
 
 def main():
     # create data path folder if it doesn't already exist
@@ -88,7 +91,7 @@ def main():
         
         # move zip file to ./data/pums/zip if it's in ./data/pums
         new_file_path = os.path.join(zip_path, file_name)
-        if (file_path != new_file_path):
+        if file_path != new_file_path:
             os.rename(file_path, new_file_path)
 
     print("All files downloaded and extracted.")
@@ -106,6 +109,7 @@ def main():
             os.remove(path_to_file)
     else:
         print("Leftover zip files transfered to '%s'." % zip_path)
+
 
 if __name__ == '__main__':
     try:
