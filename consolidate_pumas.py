@@ -1,10 +1,6 @@
 import os
 import json
-
-# directory path to the pumas directory
-data_path = './data/pumas/'
-# filename of big puma GEOJSON file we'll use
-consolidated_puma = 'pumas.json'
+from utils.globals import *
 
 
 def main():
@@ -22,22 +18,26 @@ def main():
         'features': []
     }
     # get list of json files in the pumas directory
-    puma_files = [file for file in os.listdir(data_path)
-                  if file.endswith('.json') and file != consolidated_puma]
+    puma_files = [file for file in os.listdir(PUMAS_GEOJSON_DIRECTORY)
+                  if file.endswith('.json') and file != PUMAS_GEOJSON_FILE]
     # loop through list and open all json files as python dicts
     # then add the puma data to the pumas_dict 'features' list
-    print(f'Consolidating all PUMA GEOJSON files into \'{consolidated_puma}\'')
+    print(f'Consolidating all PUMA GEOJSON files into \'{PUMAS_GEOJSON_FILE}\'')
     for puma_filename in puma_files:
         print(f'Incorporating \'{puma_filename}\'', end='')
-        with open(os.path.join(data_path, puma_filename)) as puma:
+        with open(os.path.join(PUMAS_GEOJSON_DIRECTORY, puma_filename)) as puma:
             puma_data = json.load(puma)
-            pumas_dict['features'].append(puma_data['features'][0])
+            for feature in puma_data['features']:
+                # we need to cut down the number of coordinates so that the filesize isn't massive
+                condensed_coordinates = feature['geometry']['coordinates'][0]
+                # discard every other coordinate a total of 4 times, reducing file size by ~16x
+                feature['geometry']['coordinates'] = [condensed_coordinates[::2][::2][::2][::2]]
+                pumas_dict['features'].append(feature)
         print(' ... done!')
     # export the pumas_dict to a json file
-    with open(os.path.join(data_path, consolidated_puma), 'w') as outfile:
+    with open(os.path.join(PUMAS_GEOJSON_DIRECTORY, PUMAS_GEOJSON_FILE), 'w') as outfile:
         json.dump(pumas_dict, outfile)
 
 
 if __name__ == '__main__':
     main()
-

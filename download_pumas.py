@@ -7,7 +7,7 @@ from utils.globals import *
 # script globals
 current_file = ""  # keep track of the current file being worked on
 # read in filenames to download from text file
-with open(PUMA_FILE_NAMES) as file_names:
+with open(PUMAS_FILE_NAMES) as file_names:
     files = file_names.read().splitlines()
 
 

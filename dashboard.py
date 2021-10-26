@@ -4,9 +4,12 @@ from dash import dcc
 from dash import html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+import os
 
 import pandas as pd
 import json
+
+from utils.globals import *
 
 
 # Initialize app
@@ -23,17 +26,15 @@ server = app.server
 
 
 # Load data
-with open('data/tl_2019_01_puma50.json') as geojson_file:
+with open(os.path.join(PUMAS_GEOJSON_DIRECTORY, PUMAS_GEOJSON_FILE)) as geojson_file:
     pumas = json.load(geojson_file)
 
-with open('data/psam_p50.csv') as df_file:
-    df = pd.read_csv(df_file, dtype={"PUMA": "string", "AGEP": int})
-
-df_count = df.groupby('PUMA', as_index=False)['AGEP'].size()
+with open(os.path.join(PUMS_CSV_FILE_DIRECTORY, 'pums.csv')) as df_file:
+    df = pd.read_csv(df_file, dtype={'GEOID': str})
 
 # Map figure
 
-map_fig = px.choropleth_mapbox(df_count, geojson=pumas, locations='PUMA', featureidkey="properties.PUMACE10", color='size',
+map_fig = px.choropleth_mapbox(df, geojson=pumas, locations='GEOID', featureidkey="properties.GEOID10", color='size',
                                color_continuous_scale=px.colors.sequential.Viridis,
                                mapbox_style="carto-positron",
                                zoom=7, center={"lat": 43.9, "lon": -72.75},

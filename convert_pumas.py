@@ -7,7 +7,7 @@ from utils.globals import *
 current_file = ""  # current file being worked on
 json_file_path = ""  # write-path of the current file
 # read in filenames to convert from text file
-with open(PUMA_FILE_NAMES) as file_names:
+with open(PUMAS_FILE_NAMES) as file_names:
     files = file_names.read().splitlines()
 
 
