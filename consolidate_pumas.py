@@ -26,10 +26,13 @@ def main():
                   if file.endswith('.json') and file != consolidated_puma]
     # loop through list and open all json files as python dicts
     # then add the puma data to the pumas_dict 'features' list
+    print(f'Consolidating all PUMA GEOJSON files into \'{consolidated_puma}\'')
     for puma_filename in puma_files:
+        print(f'Incorporating \'{puma_filename}\'', end='')
         with open(os.path.join(data_path, puma_filename)) as puma:
             puma_data = json.load(puma)
             pumas_dict['features'].append(puma_data['features'][0])
+        print(' ... done!')
     # export the pumas_dict to a json file
     with open(os.path.join(data_path, consolidated_puma), 'w') as outfile:
         json.dump(pumas_dict, outfile)

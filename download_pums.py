@@ -2,113 +2,86 @@ import urllib.request
 import zipfile
 import os
 import sys
-import time
+from utils.download_utils import ReportHook, fix_bad_zip_file
+from utils.globals import *
 
-with open("./pums_file_names.txt") as file_names:
+# script globals
+current_file = ""  # keep track of the current file being worked on
+# read in filenames to download from text file
+with open(PUMS_FILE_NAMES) as file_names:
     files = file_names.read().splitlines()
-
-base_url = "https://www2.census.gov/programs-surveys/acs/data/pums/2019/5-Year/"
-data_path = "./data/pums/"
-zip_path = "./data/pums/zip/"
-current_file = ""
-start_time = None
-
-
-def reporthook(count, block_size, total_size):
-    global start_time
-    global current_file
-    if count == 0:
-        start_time = time.time()
-        return
-    duration = time.time() - start_time
-    progress_size = int(count * block_size)
-    speed = int(progress_size / ((1024 * duration) + 1))
-    sys.stdout.write("\rDownloading file '%s' ... %d MB, %d KB/s, %0.2f sec elapsed" %
-                    (current_file, progress_size / (1024 * 1024), speed, duration))
-    sys.stdout.flush()
-
-
-def fix_bad_zip_file(zip_file):  
-    f = open(zip_file, 'r+b')  
-    data = f.read()  
-    pos = data.find(b'\x50\x4b\x05\x06') # End of central directory signature  
-    if (pos > 0):  
-        print(" ... Truncating file at location " + str(pos + 22)+ ".", end="")  
-        f.seek(pos + 22)   # size of 'ZIP end of central directory record' 
-        f.truncate()  
-        f.close()  
-    else:  
-        # raise error, file is truncated  
-        print(" ... Error: File is truncated")
 
 
 def main():
-    # create data path folder if it doesn't already exist
-    try:
-        os.mkdir(data_path)
-    except FileExistsError:
-        pass
-    try:
-        os.mkdir(zip_path)
-    except FileExistsError:
-        pass
+    # create data path folders if they don't already exist
+    for directory in [DATA_DIRECTORY, PUMS_CSV_FILE_DIRECTORY, PUMS_ZIP_FILE_DIRECTORY]:
+        try:
+            os.mkdir(directory)
+        except FileExistsError:
+            pass
 
     for file_name in files:
         global current_file
         current_file = file_name
-        file_path = ""
         
         # download file if it doesn't already exist
-        if os.path.exists(os.path.join(data_path, file_name)):
-            file_path = os.path.join(data_path, file_name)
+        # check in csv directory
+        if os.path.exists(os.path.join(PUMS_CSV_FILE_DIRECTORY, file_name)):
+            file_path = os.path.join(PUMS_CSV_FILE_DIRECTORY, file_name)
             print("Downloading file '%s' ... done!" % file_name, end="")
-        elif os.path.exists(os.path.join(zip_path, file_name)):
-            file_path = os.path.join(zip_path, file_name)
+        # check in zip file directory
+        elif os.path.exists(os.path.join(PUMS_ZIP_FILE_DIRECTORY, file_name)):
+            file_path = os.path.join(PUMS_ZIP_FILE_DIRECTORY, file_name)
             print("Downloading file '%s' ... done!" % file_name, end="")
+        # download file
         else:
             try:
-                file_path = os.path.join(data_path, file_name)
-                urllib.request.urlretrieve((base_url + file_name), file_path, reporthook=reporthook)
+                file_path = os.path.join(PUMS_CSV_FILE_DIRECTORY, file_name)
+                report_hook = ReportHook()  # hook to report download progress
+                report_hook.current_file = current_file
+                urllib.request.urlretrieve((PUMS_DOWNLOAD_URL + file_name), file_path, reporthook=report_hook.reporthook)
                 print(" ... done!", end="")
                 sys.stdout.flush()
             except urllib.error.HTTPError:
                 print("Downloading file '%s' ... failed, invalid file!" % file_name)
                 continue
         
-        # unzip
+        # unzip file
         try:
             with zipfile.ZipFile(file_path, 'r') as zip_ref:
-                zip_ref.extractall(data_path)
+                zip_ref.extractall(PUMS_CSV_FILE_DIRECTORY)
             print(" ... zip file extracted!")
+        # deal with bad zip files
         except zipfile.BadZipFile:
             fix_bad_zip_file(file_path)
             try:
                 with zipfile.ZipFile(file_path, 'r') as zip_ref:
-                    zip_ref.extractall(data_path)
+                    zip_ref.extractall(PUMS_CSV_FILE_DIRECTORY)
                 print(" ... zip file extracted!")
             except zipfile.BadZipFile:
                 continue
         
         # move zip file to ./data/pums/zip if it's in ./data/pums
-        new_file_path = os.path.join(zip_path, file_name)
+        new_file_path = os.path.join(PUMS_ZIP_FILE_DIRECTORY, file_name)
         if file_path != new_file_path:
             os.rename(file_path, new_file_path)
 
     print("All files downloaded and extracted.")
 
+    # prompt user to delete leftover zip files to free up space
     del_zips = ""
     while del_zips != "y" and del_zips != "n":
         del_zips = input("Do you wish to delete leftover zip files? (y/n): ")
-    
-    files_in_directory = os.listdir(zip_path)
+
+    files_in_directory = os.listdir(PUMS_ZIP_FILE_DIRECTORY)
     zip_files = [f for f in files_in_directory if f.endswith(".zip")]
     if del_zips == "y":
         print("Removing leftover zip files.")
         for f in zip_files:
-            path_to_file = os.path.join(zip_path, f)
+            path_to_file = os.path.join(PUMS_ZIP_FILE_DIRECTORY, f)
             os.remove(path_to_file)
     else:
-        print("Leftover zip files transfered to '%s'." % zip_path)
+        print("Leftover zip files transfered to '%s'." % PUMS_ZIP_FILE_DIRECTORY)
 
 
 if __name__ == '__main__':
@@ -117,7 +90,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('\nInterrupted, deleting incomplete downloads...\nExiting...')
         try:
-            os.remove(data_path + current_file)
+            os.remove(PUMS_CSV_FILE_DIRECTORY + current_file)
         except FileNotFoundError:
             pass
         try:
