@@ -1,9 +1,17 @@
 import os
 import json
 from utils.globals import *
+import subprocess
 
 
 def main():
+    convert_pumas()
+    consolidate_pumas()
+    simplify_pumas()
+    print("Done!")
+
+
+def consolidate_pumas():
     # setup the skeleton for the GEOJSON file
     # we'll read all the pumas into the 'features' list
     pumas_dict = {
@@ -31,8 +39,21 @@ def main():
                 pumas_dict['features'].append(feature)
         print(' ... done!')
     # export the pumas_dict to a json file
+    print("Exporting consolidated geojson ...")
     with open(os.path.join(PUMAS_GEOJSON_DIRECTORY, PUMAS_GEOJSON_FILE), 'w') as outfile:
         json.dump(pumas_dict, outfile)
+
+
+def convert_pumas():
+    print("Converting PUMA shapefiles to geojson ...")
+    completed_process = subprocess.run(["node", "convert_pumas.js"], text=True, capture_output=True)
+    print(completed_process.stdout)
+
+
+def simplify_pumas():
+    print("Simplifying consolidated PUMA geojson ...")
+    completed_process = subprocess.run(["node", "simplify_pumas.js"], text=True, capture_output=True)
+    print(completed_process.stdout)
 
 
 if __name__ == '__main__':

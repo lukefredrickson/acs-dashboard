@@ -12,7 +12,8 @@ current_file = ""  # keep track of the current file being worked on
 
 def main():
     # create data path folders if they don't already exist
-    for directory in [DATA_DIRECTORY, PUMAS_GEOJSON_DIRECTORY, PUMAS_SHAPE_FILE_DIRECTORY, PUMAS_ZIP_FILE_DIRECTORY]:
+    for directory in [DATA_DIRECTORY, PUMAS_DIRECTORY, PUMAS_GEOJSON_DIRECTORY,
+                      PUMAS_SHAPE_FILE_DIRECTORY, PUMAS_ZIP_FILE_DIRECTORY]:
         try:
             os.mkdir(directory)
         except FileExistsError:
@@ -45,8 +46,10 @@ def main():
 
         # extract shapefile from zip and move it to the shp/ directory
         with zipfile.ZipFile(file_path, 'r') as zip_ref:
-            shp_file_name = os.path.splitext(file_name)[0] + ".shp"
-            zip_ref.extract(shp_file_name, PUMAS_SHAPE_FILE_DIRECTORY)
+            base_file_name = os.path.splitext(file_name)[0]
+            for ext in [".shp", ".dbf", ".prj"]:
+                extract = base_file_name + ext
+                zip_ref.extract(extract, PUMAS_SHAPE_FILE_DIRECTORY)
         print(" ... zip file extracted!")
 
 

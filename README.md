@@ -21,7 +21,6 @@ Use the provided scripts to automatically download and modify the ACS PUMS and P
 
 ```shell
 python download_pumas.py
-python convert_pumas.py
 python consolidate_pumas.py
 ```
 ```shell
