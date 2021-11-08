@@ -6,8 +6,10 @@ PUMS_CSV_FILE_DIRECTORY = './data/pums/'
 PUMS_ZIP_FILE_DIRECTORY = './data/pums/zip'
 
 PUMAS_DOWNLOAD_URL = 'https://www2.census.gov/geo/tiger/TIGER2019/PUMA/'
+PUMAS_DIRECTORY = './data/pumas/'
 PUMAS_FILE_NAMES = './puma_file_names.txt'
-PUMAS_GEOJSON_DIRECTORY = './data/pumas/'
+PUMAS_GEOJSON_DIRECTORY = './data/pumas/geojson/'
+PUMAS_SHAPE_FILE_DIRECTORY = './data/pumas/shp/'
 PUMAS_ZIP_FILE_DIRECTORY = './data/pumas/zip/'
 PUMAS_GEOJSON_FILE = 'pumas.json'
 

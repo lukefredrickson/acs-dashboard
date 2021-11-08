@@ -28,6 +28,6 @@ class ReportHook:
         duration = time.time() - self.start_time
         progress_size = int(count * block_size)
         speed = int(progress_size / ((1024 * duration) + 1))
-        sys.stdout.write("\rDownloading file '%s' ... %d MB, %d KB/s, %0.2f sec elapsed" %
-                         (self.current_file, progress_size / (1024 * 1024), speed, duration))
+        sys.stdout.write("\rDownloading file '%s' ... %d KB, %d KB/s, %0.2f sec elapsed" %
+                         (self.current_file, progress_size, speed, duration))
         sys.stdout.flush()
