@@ -1,7 +1,8 @@
 import urllib.request
 import os
 import sys
-from utils.download_utils import ReportHook, fix_bad_zip_file
+import zipfile
+from utils.download_utils import ReportHook
 from utils.globals import *
 
 # script globals
@@ -13,7 +14,7 @@ with open(PUMAS_FILE_NAMES) as file_names:
 
 def main():
     # create data path folders if they don't already exist
-    for directory in [DATA_DIRECTORY, PUMAS_GEOJSON_DIRECTORY, PUMAS_ZIP_FILE_DIRECTORY]:
+    for directory in [DATA_DIRECTORY, PUMAS_GEOJSON_DIRECTORY, PUMAS_SHAPE_FILE_DIRECTORY, PUMAS_ZIP_FILE_DIRECTORY]:
         try:
             os.mkdir(directory)
         except FileExistsError:
@@ -22,17 +23,13 @@ def main():
     for file_name in files:
         global current_file
         current_file = file_name
-        
         # download file if it doesn't already exist
-        if os.path.exists(os.path.join(PUMAS_GEOJSON_DIRECTORY, file_name)):
-            file_path = os.path.join(PUMAS_GEOJSON_DIRECTORY, file_name)
-            print("Downloading file '%s' ... done!" % file_name)
-        elif os.path.exists(os.path.join(PUMAS_ZIP_FILE_DIRECTORY, file_name)):
+        if os.path.exists(os.path.join(PUMAS_ZIP_FILE_DIRECTORY, file_name)):
             file_path = os.path.join(PUMAS_ZIP_FILE_DIRECTORY, file_name)
             print("Downloading file '%s' ... done!" % file_name)
         else:
             try:
-                file_path = os.path.join(PUMAS_GEOJSON_DIRECTORY, file_name)
+                file_path = os.path.join(PUMAS_ZIP_FILE_DIRECTORY, file_name)
                 report_hook = ReportHook()
                 report_hook.current_file = current_file
                 urllib.request.urlretrieve((PUMAS_DOWNLOAD_URL + file_name), file_path, reporthook=report_hook.reporthook)
@@ -41,26 +38,14 @@ def main():
             except urllib.error.HTTPError:
                 print("Downloading file '%s' ... failed, invalid file!" % file_name)
                 continue
-        
-        # move zip file to ./data/puma/zip if it's in ./data/puma
-        new_file_path = os.path.join(PUMAS_ZIP_FILE_DIRECTORY, file_name)
-        if file_path != new_file_path:
-            os.rename(file_path, new_file_path)
 
-    # prompt user to delete leftover zip files to free up space
-    del_zips = ""
-    while del_zips != "y" and del_zips != "n":
-        del_zips = input("Do you wish to delete leftover zip files? (y/n): ")
+        # unzip file
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            base_file_name, _ = os.path.splitext(file_name)
+            shp_file_name = base_file_name + ".shp"
+            zip_ref.extract(shp_file_name, PUMAS_SHAPE_FILE_DIRECTORY)
+        print(" ... zip file extracted!")
 
-    files_in_directory = os.listdir(PUMAS_ZIP_FILE_DIRECTORY)
-    zip_files = [f for f in files_in_directory if f.endswith(".zip")]
-    if del_zips == "y":
-        print("Removing leftover zip files.")
-        for f in zip_files:
-            path_to_file = os.path.join(PUMAS_ZIP_FILE_DIRECTORY, f)
-            os.remove(path_to_file)
-    else:
-        print("Leftover zip files transfered to '%s'." % PUMAS_ZIP_FILE_DIRECTORY)
 
 
 if __name__ == '__main__':
@@ -69,7 +54,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('\nInterrupted, deleting incomplete downloads...\nExiting...')
         try:
-            os.remove(PUMAS_GEOJSON_DIRECTORY + current_file)
+            os.remove(PUMAS_ZIP_FILE_DIRECTORY + current_file)
         except FileNotFoundError:
             pass
         try:

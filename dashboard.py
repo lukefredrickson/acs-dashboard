@@ -38,7 +38,7 @@ map_fig = px.choropleth_mapbox(df, geojson=pumas, locations='GEOID', featureidke
                                color_continuous_scale=px.colors.sequential.Viridis,
                                mapbox_style="carto-positron",
                                zoom=7, center={"lat": 43.9, "lon": -72.75},
-                               opacity=1,
+                               opacity=0.7,
                                )
 map_fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
 

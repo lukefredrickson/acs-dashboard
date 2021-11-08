@@ -1,0 +1,5 @@
+convert shapefile to geojson
+mapshaper *.shp -o format=geojson
+
+simplify shapefile
+mapshaper pumas.json -simplify keep-shapes percentage=0.15 -o simplified.json

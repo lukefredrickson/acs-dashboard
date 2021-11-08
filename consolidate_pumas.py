@@ -28,10 +28,6 @@ def main():
         with open(os.path.join(PUMAS_GEOJSON_DIRECTORY, puma_filename)) as puma:
             puma_data = json.load(puma)
             for feature in puma_data['features']:
-                # we need to cut down the number of coordinates so that the filesize isn't massive
-                condensed_coordinates = feature['geometry']['coordinates'][0]
-                # discard every other coordinate a total of 4 times, reducing file size by ~16x
-                feature['geometry']['coordinates'] = [condensed_coordinates[::2][::2][::2][::2]]
                 pumas_dict['features'].append(feature)
         print(' ... done!')
     # export the pumas_dict to a json file
